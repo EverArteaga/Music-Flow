@@ -133,25 +133,39 @@
                 </div>
 
                 <div class="top-bar-actions">
-                    <button onclick="showSmartMixModal()" class="btn-smart-mix" title="Mix inteligente (S)">🎲
-                        Mix</button>
-                    <button onclick="document.getElementById('importPlaylistInput').click()" class="btn-icon"
-                        title="Importar playlist">📥</button>
+                    <!-- Botones siempre visibles -->
                     <button onclick="triggerFileUpload()" class="btn-upload" title="Subir música">
-                        <span>📤</span> <span>Subir</span>
+                        <span>📤</span> <span class="btn-upload-label">Subir</span>
                     </button>
-                    <button onclick="showStats()" class="btn-icon" title="Mis estadísticas" id="statsBtn">📊</button>
-                    <button onclick="showGenreModal()" class="btn-icon" title="Géneros" id="genreBtn">🎸</button>
-                    <button onclick="showLyrics()" class="btn-icon" title="Ver letra" id="lyricsBtn">🎤</button>
-                    <button onclick="toggleKaraoke()" class="btn-icon" title="Modo karaoke" id="karaokeBtn">🎙️</button>
-                    <button onclick="showEqModal()" class="btn-icon" title="Ecualizador" id="eqBtn">🎚️</button>
-                    <button onclick="showSleepTimer()" class="btn-icon" title="Temporizador de sueño"
-                        id="sleepTimerBtn">⏰</button>
+                    <button onclick="showSmartMixModal()" class="btn-smart-mix" title="Mix inteligente (S)">🎲 <span
+                            class="btn-mix-label">Mix</span></button>
                     <button onclick="toggleQueue()" class="btn-icon" title="Cola de reproducción"
                         id="queueBtn">☰</button>
                     <button onclick="toggleTheme()" class="btn-icon" title="Cambiar tema" id="themeBtn">🌙</button>
-                    <button onclick="toggleFocusMode()" class="btn-icon" title="Modo sin distracciones (F)"
-                        id="focusModeBtn">⛶</button>
+
+                    <!-- Menú "más opciones" para botones secundarios -->
+                    <div class="more-menu-wrap" id="moreMenuWrap">
+                        <button class="btn-icon more-menu-trigger" onclick="toggleMoreMenu()" title="Más opciones"
+                            id="moreMenuBtn">⋯</button>
+                        <div class="more-menu" id="moreMenu">
+                            <button onclick="document.getElementById('importPlaylistInput').click(); closeMoreMenu()"
+                                class="more-menu-item">📥 Importar playlist</button>
+                            <button onclick="showStats(); closeMoreMenu()" class="more-menu-item" id="statsBtn">📊
+                                Estadísticas</button>
+                            <button onclick="showGenreModal(); closeMoreMenu()" class="more-menu-item" id="genreBtn">🎸
+                                Géneros</button>
+                            <button onclick="showLyrics(); closeMoreMenu()" class="more-menu-item" id="lyricsBtn">🎤 Ver
+                                letra</button>
+                            <button onclick="toggleKaraoke(); closeMoreMenu()" class="more-menu-item"
+                                id="karaokeBtn">🎙️ Modo karaoke</button>
+                            <button onclick="showEqModal(); closeMoreMenu()" class="more-menu-item" id="eqBtn">🎚️
+                                Ecualizador</button>
+                            <button onclick="showSleepTimer(); closeMoreMenu()" class="more-menu-item"
+                                id="sleepTimerBtn">⏰ Temporizador</button>
+                            <button onclick="toggleFocusMode(); closeMoreMenu()" class="more-menu-item"
+                                id="focusModeBtn">⛶ Modo enfoque</button>
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -711,6 +725,20 @@
     <script>
         document.querySelectorAll('.modal').forEach(m => {
             m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+        });
+    </script>
+
+    <script>
+        function toggleMoreMenu() {
+            const wrap = document.getElementById('moreMenuWrap');
+            wrap.classList.toggle('open');
+        }
+        function closeMoreMenu() {
+            document.getElementById('moreMenuWrap').classList.remove('open');
+        }
+        document.addEventListener('click', function (e) {
+            const wrap = document.getElementById('moreMenuWrap');
+            if (wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
         });
     </script>
 </body>
