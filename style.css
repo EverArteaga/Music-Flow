@@ -1,4 +1,4 @@
-   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
    /* ============================================
    CSS VARIABLES — LIGHT & DARK THEMES
@@ -6448,3 +6448,67 @@
        font-weight: 600;
        letter-spacing: 0.05em;
    }
+/* ============================================================
+   TOP BAR — RESPONSIVE MÓVIL (PATCH)
+   ============================================================ */
+
+/* En pantallas pequeñas: top-bar no desborda */
+@media (max-width: 600px) {
+    .top-bar {
+        padding: 0.6rem 0.75rem 0.6rem 3.5rem; /* espacio para el hamburger */
+        gap: 0.4rem;
+        flex-wrap: nowrap;
+        overflow: visible;
+    }
+
+    .top-bar-actions {
+        gap: 0.35rem;
+        flex-wrap: nowrap;
+        overflow: visible;
+    }
+
+    /* Ocultar etiquetas de texto en botones */
+    .btn-upload-label,
+    .btn-mix-label {
+        display: none !important;
+    }
+
+    /* Compactar botón upload para que sea solo icono */
+    .btn-upload {
+        padding: 0 0.55rem;
+        width: 38px;
+        justify-content: center;
+    }
+
+    /* Compactar btn-smart-mix para que sea solo icono */
+    .btn-smart-mix {
+        padding: 0 0.55rem;
+        min-width: 38px;
+        width: 38px;
+        justify-content: center;
+    }
+}
+
+/* El menú "más" siempre visible — en desktop se puede ver todo inline */
+@media (min-width: 601px) {
+    /* En desktop, mostrar los botones del more-menu inline también */
+    .more-menu-trigger {
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: -1px;
+    }
+}
+
+/* Asegurar que el more-menu no se salga de la pantalla en móvil */
+.more-menu {
+    right: 0;
+    left: auto;
+    max-width: calc(100vw - 1rem);
+}
+
+@media (max-width: 400px) {
+    .more-menu {
+        right: -0.5rem;
+        min-width: 170px;
+    }
+}
