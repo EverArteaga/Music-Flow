@@ -2182,7 +2182,7 @@
    }
 
    @media (max-width: 480px) {
-       .top-bar-actions .btn-upload span {
+       .top-bar-actions .btn-upload .btn-upload-label {
            display: none;
        }
 
@@ -4554,7 +4554,7 @@
    }
 
    @media (max-width: 480px) {
-       .top-bar-actions .btn-upload span {
+       .top-bar-actions .btn-upload .btn-upload-label {
            display: none;
        }
 
