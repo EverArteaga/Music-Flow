@@ -136,9 +136,15 @@ function loadState() {
         if (saved.likedSongs) appState.likedSongs = saved.likedSongs;
         if (saved.listeningHistory) appState.listeningHistory = saved.listeningHistory;
         if (saved.lyricsData) appState.lyricsData = { ...appState.lyricsData, ...saved.lyricsData };
-        // Restaurar canciones (sin archivo, se carga desde IDB después)
+        // Restaurar canciones — eliminar demos viejas que no tienen archivo real
+        const DEMO_TITLES = ['Summer Vibes', 'Midnight Dreams', 'Urban Flow', 'Neon Lights', 'Ocean Breeze', 'Velvet Thunder', 'Golden Hour', 'Deep Space'];
         if (saved.songs) {
-            appState.songs = saved.songs.map(s => ({ ...s, file: null }));
+            const filtered = saved.songs.filter(s => !DEMO_TITLES.includes(s.title) || s.hasFile);
+            appState.songs = filtered.map(s => ({ ...s, file: null }));
+            if (filtered.length !== saved.songs.length) {
+                saved.songs = filtered;
+                localStorage.setItem('musicflow_state', JSON.stringify(saved));
+            }
         }
         return true;
     } catch (e) { return false; }
