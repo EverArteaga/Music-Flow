@@ -56,18 +56,18 @@ function showToast(message, type = 'info', duration = 3000) {
 // INIT
 // ============================================
 function init() {
-    if (appState.songs.length === 0) {
-        const colors = ['#9d4edd', '#5390d9', '#4ade80', '#f59e0b', '#ef4444'];
-        appState.songs = [
-            { id: 1, title: 'Summer Vibes', artist: 'DJ Sunset', duration: 234, genre: 'Electronic', plays: 12, color: colors[0] },
-            { id: 2, title: 'Midnight Dreams', artist: 'Luna Nova', duration: 198, genre: 'Pop', plays: 8, color: colors[1] },
-            { id: 3, title: 'Urban Flow', artist: 'Street Beats', duration: 267, genre: 'Hip Hop', plays: 21, color: colors[2] },
-            { id: 4, title: 'Neon Lights', artist: 'Synth Wave', duration: 245, genre: 'Electronic', plays: 5, color: colors[3] },
-            { id: 5, title: 'Ocean Breeze', artist: 'Chill Wave', duration: 212, genre: 'Ambient', plays: 17, color: colors[4] },
-            { id: 6, title: 'Velvet Thunder', artist: 'Storm Project', duration: 189, genre: 'Rock', plays: 9, color: colors[0] },
-            { id: 7, title: 'Golden Hour', artist: 'Sol Rivera', duration: 221, genre: 'Pop', plays: 30, color: colors[1] },
-            { id: 8, title: 'Deep Space', artist: 'Astro Collective', duration: 278, genre: 'Electronic', plays: 14, color: colors[2] },
-        ];
+    // Limpiar canciones demo del localStorage si existen
+    const stored = localStorage.getItem('musicflow_state');
+    if (stored) {
+        try {
+            const parsed = JSON.parse(stored);
+            const demoIds = [1, 2, 3, 4, 5, 6, 7, 8];
+            const demoTitles = ['Summer Vibes', 'Midnight Dreams', 'Urban Flow', 'Neon Lights', 'Ocean Breeze', 'Velvet Thunder', 'Golden Hour', 'Deep Space'];
+            if (parsed.songs) {
+                parsed.songs = parsed.songs.filter(s => !demoTitles.includes(s.title) || !demoIds.includes(s.id));
+                localStorage.setItem('musicflow_state', JSON.stringify(parsed));
+            }
+        } catch (e) { /* ignore */ }
     }
 
     setupEventListeners();
