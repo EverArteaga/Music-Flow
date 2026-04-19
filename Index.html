@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Flow</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <!-- ==================== AUTH SCREEN ==================== -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-bg">
+            <div class="auth-orb auth-orb-1"></div>
+            <div class="auth-orb auth-orb-2"></div>
+            <div class="auth-orb auth-orb-3"></div>
+        </div>
+
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="auth-logo">🎵</div>
+                <h1>Music Flow</h1>
+                <p>Tu música, tu estilo, tu flow</p>
+            </div>
+
+            <div id="loginForm" class="auth-form">
+                <div class="input-group">
+                    <span class="input-icon">📧</span>
+                    <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="loginPassword" placeholder="Contraseña" autocomplete="current-password"
+                        onkeydown="if(event.key==='Enter') handleLogin()">
+                </div>
+                <button onclick="handleLogin()" class="btn-primary">Iniciar Sesión</button>
+            </div>
+
+            <div id="signupForm" class="auth-form" style="display:none">
+                <div class="input-group">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="signupName" placeholder="Nombre completo" autocomplete="name">
+                </div>
+                <div class="input-group">
+                    <span class="input-icon">📧</span>
+                    <input type="email" id="signupEmail" placeholder="Email" autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="signupPassword" placeholder="Contraseña (mín. 6 caracteres)"
+                        onkeydown="if(event.key==='Enter') handleSignup()">
+                </div>
+                <button onclick="handleSignup()" class="btn-primary">Crear Cuenta</button>
+            </div>
+
+            <div class="auth-divider">o</div>
+
+            <div class="auth-footer">
+                <p id="toggleAuthText">¿No tienes cuenta? <a href="#"
+                        onclick="toggleAuth(); return false;">Regístrate</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN APP ==================== -->
+    <div id="mainApp" class="main-app" style="display:none">
+
+        <!-- Mobile menu button -->
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span>Flow</span>
+                    <span class="logo-dot"></span>
+                </div>
+                <button class="mobile-close-btn" onclick="toggleMobileMenu()">✕</button>
+            </div>
+
+            <div class="nav-section-label">Menú</div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="showView('home')">
+                    <span class="nav-icon">🏠</span> Inicio
+                </li>
+                <li class="nav-item" onclick="showView('search')">
+                    <span class="nav-icon">🔍</span> Buscar
+                </li>
+                <li class="nav-item" onclick="showView('library')">
+                    <span class="nav-icon">📚</span> Biblioteca
+                </li>
+                <li class="nav-item" onclick="showView('favorites')">
+                    <span class="nav-icon">❤️</span> Favoritos
+                </li>
+                <li class="nav-item" onclick="showView('history')">
+                    <span class="nav-icon">🕐</span> Historial
+                </li>
+            </ul>
+
+            <div class="sidebar-playlists">
+                <div class="playlists-header">
+                    <span class="playlists-label">Playlists</span>
+                    <button onclick="showPlaylistModal()" class="btn-add" title="Nueva playlist">+</button>
+                </div>
+                <ul id="playlistsList" class="playlist-menu"></ul>
+            </div>
+
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-info">
+                    <div id="userName" class="user-name">Usuario</div>
+                </div>
+                <button onclick="handleLogout()" class="btn-logout" title="Cerrar sesión">⏏</button>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <!-- TOP BAR -->
+            <header class="top-bar">
+                <div id="searchContainer" style="display:none; flex:1; max-width:380px; position:relative">
+                    <span
+                        style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Buscar canciones, artistas..."
+                        oninput="handleSearch()"
+                        style="width:100%;padding:0.65rem 1rem 0.65rem 2.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s">
+                </div>
+
+                <div class="top-bar-actions">
+                    <button onclick="showSmartMixModal()" class="btn-smart-mix" title="Mix inteligente (S)">🎲
+                        Mix</button>
+                    <button onclick="document.getElementById('importPlaylistInput').click()" class="btn-icon"
+                        title="Importar playlist">📥</button>
+                    <button onclick="triggerFileUpload()" class="btn-upload" title="Subir música">
+                        <span>📤</span> <span>Subir</span>
+                    </button>
+                    <button onclick="showStats()" class="btn-icon" title="Mis estadísticas" id="statsBtn">📊</button>
+                    <button onclick="showGenreModal()" class="btn-icon" title="Géneros" id="genreBtn">🎸</button>
+                    <button onclick="showLyrics()" class="btn-icon" title="Ver letra" id="lyricsBtn">🎤</button>
+                    <button onclick="toggleKaraoke()" class="btn-icon" title="Modo karaoke" id="karaokeBtn">🎙️</button>
+                    <button onclick="showEqModal()" class="btn-icon" title="Ecualizador" id="eqBtn">🎚️</button>
+                    <button onclick="showSleepTimer()" class="btn-icon" title="Temporizador de sueño"
+                        id="sleepTimerBtn">⏰</button>
+                    <button onclick="toggleQueue()" class="btn-icon" title="Cola de reproducción"
+                        id="queueBtn">☰</button>
+                    <button onclick="toggleTheme()" class="btn-icon" title="Cambiar tema" id="themeBtn">🌙</button>
+                    <button onclick="toggleFocusMode()" class="btn-icon" title="Modo sin distracciones (F)"
+                        id="focusModeBtn">⛶</button>
+                </div>
+            </header>
+
+            <!-- HOME VIEW -->
+            <div id="homeView" class="view">
+                <div class="hero">
+                    <div class="hero-noise"></div>
+                    <div class="hero-badge"><span class="hero-badge-dot"></span> En línea</div>
+                    <h1>Bienvenido a<br>Music Flow</h1>
+                    <p>Descubre nuevas sensaciones musicales cada día.</p>
+                </div>
+
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">✨ Recomendaciones</h2>
+                    </div>
+                    <div id="recommendationsGrid" class="cards-grid"></div>
+                </section>
+
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">📈 Tendencias</h2>
+                    </div>
+                    <div id="trendingGrid" class="cards-grid"></div>
+                </section>
+            </div>
+
+            <!-- SEARCH VIEW -->
+            <div id="searchView" class="view" style="display:none">
+                <h2 class="section-title" style="margin-bottom:1.5rem">🔍 Resultados</h2>
+                <div id="searchResults" class="songs-list"></div>
+            </div>
+
+            <!-- LIBRARY VIEW -->
+            <div id="libraryView" class="view" style="display:none">
+                <div class="library-header">
+                    <h2 class="library-title">📚 Biblioteca</h2>
+                    <div id="filterChips" class="filter-chips"></div>
+                </div>
+                <div id="libraryContent" class="songs-list"></div>
+                <div id="dropZone" class="drop-zone">
+                    <div style="font-size:2rem">📁</div>
+                    <p>Arrastra archivos MP3 aquí o haz clic para subir</p>
+                </div>
+            </div>
+
+            <!-- FAVORITES VIEW -->
+            <div id="favoritesView" class="view" style="display:none">
+                <h2 class="section-title" style="margin-bottom:1.5rem">❤️ Favoritos</h2>
+                <div id="favoritesContent" class="songs-list"></div>
+            </div>
+
+            <!-- HISTORY VIEW -->
+            <div id="historyView" class="view" style="display:none">
+                <div class="section-header">
+                    <h2 class="section-title">🕐 Historial de escucha</h2>
+                    <button onclick="clearHistory()" class="btn-secondary"
+                        style="font-size:0.8rem;padding:0.4rem 0.9rem">🗑️ Limpiar</button>
+                </div>
+                <div id="historyContent" class="songs-list"></div>
+            </div>
+
+            <!-- PLAYLIST VIEW (dynamic) -->
+            <div id="playlistView" class="view" style="display:none"></div>
+
+        </div><!-- /main-content -->
+
+        <!-- NOW PLAYING EXPANDED -->
+        <div id="nowPlayingPanel" class="now-playing-panel">
+            <div class="now-playing-header">
+                <h3 class="now-playing-panel-title">Reproduciendo ahora</h3>
+                <button onclick="closeNowPlaying()" class="btn-close-queue">✕</button>
+            </div>
+            <div class="now-playing-art" id="nowPlayingArt">🎵</div>
+            <div class="now-playing-info">
+                <div id="nowPlayingTitle" class="now-playing-big-title">No hay canción</div>
+                <div id="nowPlayingArtist" class="now-playing-big-artist">—</div>
+            </div>
+            <div class="now-playing-actions">
+                <button onclick="toggleLike()" id="nowPlayingLike" class="now-playing-action-btn">♡</button>
+                <button onclick="shareSong()" class="now-playing-action-btn" title="Compartir">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round">
+                        <circle cx="18" cy="5" r="3" />
+                        <circle cx="6" cy="12" r="3" />
+                        <circle cx="18" cy="19" r="3" />
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                </button>
+                <button onclick="addToQueue(appState.currentSong?.id)" class="now-playing-action-btn"
+                    title="Añadir a cola">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round">
+                        <line x1="8" y1="6" x2="21" y2="6" />
+                        <line x1="8" y1="12" x2="21" y2="12" />
+                        <line x1="8" y1="18" x2="21" y2="18" />
+                        <line x1="3" y1="6" x2="3.01" y2="6" />
+                        <line x1="3" y1="12" x2="3.01" y2="12" />
+                        <line x1="3" y1="18" x2="3.01" y2="18" />
+                    </svg>
+                </button>
+                <button onclick="showEditMetadata()" class="now-playing-action-btn" title="Editar info">✏️</button>
+            </div>
+            <!-- Visualizer bars -->
+            <div class="np-visualizer" id="npVisualizer">
+                <div class="np-bar"></div>
+                <div class="np-bar"></div>
+                <div class="np-bar"></div>
+                <div class="np-bar"></div>
+                <div class="np-bar"></div>
+                <div class="np-bar"></div>
+                <div class="np-bar"></div>
+                <div class="np-bar"></div>
+            </div>
+            <!-- Speed control -->
+            <div class="speed-control">
+                <span class="speed-label">Velocidad</span>
+                <div class="speed-btns">
+                    <button class="speed-btn" onclick="setSpeed(0.5)">0.5x</button>
+                    <button class="speed-btn active" onclick="setSpeed(1)">1x</button>
+                    <button class="speed-btn" onclick="setSpeed(1.25)">1.25x</button>
+                    <button class="speed-btn" onclick="setSpeed(1.5)">1.5x</button>
+                    <button class="speed-btn" onclick="setSpeed(2)">2x</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUEUE PANEL -->
+        <div class="queue-panel" id="queuePanel">
+            <div class="queue-header">
+                <span class="queue-title">Cola de reproducción</span>
+                <div style="display:flex;gap:0.5rem;align-items:center">
+                    <button onclick="clearManualQueue()" class="btn-secondary"
+                        style="font-size:0.75rem;padding:0.3rem 0.7rem">Limpiar</button>
+                    <button class="btn-close-queue" onclick="closeQueue()">✕</button>
+                </div>
+            </div>
+            <div class="queue-tabs">
+                <button class="queue-tab active" onclick="switchQueueTab('next')">Siguiente</button>
+                <button class="queue-tab" onclick="switchQueueTab('manual')">Cola manual</button>
+            </div>
+            <div class="queue-content" id="queueContent">
+                <div class="queue-empty">
+                    <div style="font-size:2rem;margin-bottom:0.5rem">🎵</div>
+                    <div>La cola está vacía</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLAYER -->
+        <div class="player">
+            <div class="player-container">
+
+                <!-- Track info -->
+                <div class="track-info">
+                    <div id="playerThumbnail" class="player-thumbnail" onclick="toggleNowPlaying()"
+                        style="cursor:pointer" title="Ver ahora reproduciendo">🎵</div>
+                    <div class="track-details">
+                        <div id="playerTitle" class="player-title">No hay canción</div>
+                        <div id="playerArtist" class="player-artist">—</div>
+                    </div>
+                    <button id="likeBtn" class="like-btn" onclick="toggleLike()">♡</button>
+                </div>
+
+                <!-- Controls -->
+                <div class="player-controls-container">
+                    <div class="player-buttons">
+                        <button onclick="toggleShuffle()" class="control-btn" id="shuffleBtn" title="Aleatorio">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="16 3 21 3 21 8" />
+                                <line x1="4" y1="20" x2="21" y2="3" />
+                                <polyline points="21 16 21 21 16 21" />
+                                <line x1="15" y1="15" x2="21" y2="21" />
+                            </svg>
+                        </button>
+                        <button onclick="prevSong()" class="control-btn" title="Anterior">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="19 20 9 12 19 4 19 20" />
+                                <line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" fill="none" />
+                            </svg>
+                        </button>
+                        <button onclick="togglePlay()" class="play-btn" id="playBtn" title="Reproducir">
+                            <svg id="playIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5 3 19 12 5 21 5 3" />
+                            </svg>
+                            <svg id="pauseIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+                                style="display:none">
+                                <rect x="6" y="4" width="4" height="16" />
+                                <rect x="14" y="4" width="4" height="16" />
+                            </svg>
+                        </button>
+                        <button onclick="nextSong()" class="control-btn" title="Siguiente">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5 4 15 12 5 20 5 4" />
+                                <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" fill="none" />
+                            </svg>
+                        </button>
+                        <button onclick="toggleRepeat()" class="control-btn" id="repeatBtn" title="Repetir">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="17 1 21 5 17 9" />
+                                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                                <polyline points="7 23 3 19 7 15" />
+                                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="progress-bar">
+                        <span id="currentTime">0:00</span>
+                        <div class="progress-track" id="progressTrack">
+                            <div id="progressFill" class="progress-fill">
+                                <div class="progress-thumb"></div>
+                            </div>
+                        </div>
+                        <span id="duration">0:00</span>
+                    </div>
+                </div>
+
+                <!-- Volume & extras -->
+                <div class="player-right">
+                    <div class="volume-group">
+                        <button class="volume-btn" id="volumeBtn" onclick="toggleMute()" title="Silenciar">
+                            <svg id="volHighIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                            </svg>
+                            <svg id="volMidIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="display:none">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                            </svg>
+                            <svg id="volMuteIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="display:none">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                                <line x1="23" y1="9" x2="17" y2="15" />
+                                <line x1="17" y1="9" x2="23" y2="15" />
+                            </svg>
+                        </button>
+                        <div class="volume-track-wrap">
+                            <input type="range" id="volumeSlider" min="0" max="100" value="70" class="volume-slider">
+                            <div class="volume-fill" id="volumeFill" style="width:70%"></div>
+                        </div>
+                        <span class="volume-pct" id="volumePct">70</span>
+                    </div>
+                    <button onclick="shareSong()" class="control-btn" title="Compartir canción">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round">
+                            <circle cx="18" cy="5" r="3" />
+                            <circle cx="6" cy="12" r="3" />
+                            <circle cx="18" cy="19" r="3" />
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                        </svg>
+                    </button>
+                    <button onclick="toggleNowPlaying()" class="control-btn" title="Ver ahora reproduciendo"
+                        id="nowPlayingBtn">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+
+            </div><!-- /player-container -->
+        </div><!-- /player -->
+
+    </div><!-- /main-app -->
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- New Playlist Modal -->
+    <div id="playlistModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">🎨 Nueva Playlist</span>
+                <button class="modal-close" onclick="hidePlaylistModal()">✕</button>
+            </div>
+            <input type="text" id="playlistNameInput" placeholder="Nombre de la playlist" class="modal-input"
+                onkeydown="if(event.key==='Enter') createPlaylist()">
+            <div class="modal-buttons">
+                <button onclick="hidePlaylistModal()" class="btn-secondary">Cancelar</button>
+                <button onclick="createPlaylist()" class="btn-primary" style="flex:1;margin-top:0">Crear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Songs to Playlist Modal -->
+    <div id="addSongsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="addSongsTitle">Agregar canciones</span>
+                <button class="modal-close" onclick="hideAddSongsModal()">✕</button>
+            </div>
+            <div id="songsPicker" class="playlist-picker"></div>
+            <div class="modal-buttons" style="margin-top:1.2rem">
+                <button onclick="hideAddSongsModal()" class="btn-secondary">Cancelar</button>
+                <button onclick="saveAddSongs()" class="btn-primary" style="flex:1;margin-top:0">Listo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sleep Timer Modal -->
+    <div id="sleepTimerModal" class="modal">
+        <div class="modal-content" style="max-width:340px">
+            <div class="modal-header">
+                <span class="modal-title">⏰ Temporizador de sueño</span>
+                <button class="modal-close" onclick="hideSleepTimer()">✕</button>
+            </div>
+            <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:1.2rem">La música se pausará
+                automáticamente.</p>
+            <div class="timer-grid">
+                <button class="timer-btn" onclick="setSleepTimer(5)">5 min</button>
+                <button class="timer-btn" onclick="setSleepTimer(10)">10 min</button>
+                <button class="timer-btn" onclick="setSleepTimer(15)">15 min</button>
+                <button class="timer-btn" onclick="setSleepTimer(30)">30 min</button>
+                <button class="timer-btn" onclick="setSleepTimer(45)">45 min</button>
+                <button class="timer-btn" onclick="setSleepTimer(60)">60 min</button>
+            </div>
+            <button onclick="setSleepTimer(0)" class="btn-secondary" style="width:100%;margin-top:1rem">Cancelar
+                temporizador</button>
+        </div>
+    </div>
+
+    <!-- Equalizer Modal -->
+    <div id="eqModal" class="modal">
+        <div class="modal-content" style="max-width:380px">
+            <div class="modal-header">
+                <span class="modal-title">🎚️ Ecualizador</span>
+                <button class="modal-close" onclick="hideEqModal()">✕</button>
+            </div>
+            <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:1.2rem">Elige un preset de sonido.</p>
+            <div class="eq-grid">
+                <button class="eq-btn active" data-preset="flat"
+                    onclick="applyEqPreset('flat')">🎯<span>Plano</span></button>
+                <button class="eq-btn" data-preset="bass" onclick="applyEqPreset('bass')">🔉<span>Bajo+</span></button>
+                <button class="eq-btn" data-preset="treble"
+                    onclick="applyEqPreset('treble')">🔊<span>Agudos+</span></button>
+                <button class="eq-btn" data-preset="vocal"
+                    onclick="applyEqPreset('vocal')">🎤<span>Vocal</span></button>
+                <button class="eq-btn" data-preset="electronic"
+                    onclick="applyEqPreset('electronic')">⚡<span>Electrónica</span></button>
+                <button class="eq-btn" data-preset="acoustic"
+                    onclick="applyEqPreset('acoustic')">🎸<span>Acústica</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Playlist Detail Modal -->
+    <div id="playlistDetailModal" class="modal">
+        <div class="modal-content" style="max-width:500px">
+            <div class="modal-header">
+                <span class="modal-title" id="playlistDetailTitle">📁 Playlist</span>
+                <button class="modal-close" onclick="hidePlaylistDetail()">✕</button>
+            </div>
+            <div class="playlist-detail-actions">
+                <button class="btn-primary" style="margin-top:0;flex:1" onclick="playPlaylistFromStart()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"
+                        style="margin-right:6px;vertical-align:middle">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    Reproducir todo
+                </button>
+                <button class="btn-secondary" onclick="exportPlaylist()">📤 JSON</button>
+                <button class="btn-secondary" onclick="exportPlaylistM3U()">📋 M3U</button>
+                <button class="btn-secondary" onclick="openAddSongsToPlaylist()">➕ Agregar</button>
+                <button class="btn-danger" onclick="deleteCurrentPlaylist()">🗑️</button>
+            </div>
+            <div id="playlistDetailSongs" class="playlist-detail-songs"></div>
+        </div>
+    </div>
+
+    <!-- Genre Modal -->
+    <div id="genreModal" class="modal">
+        <div class="modal-content" style="max-width:480px">
+            <div class="modal-header">
+                <span class="modal-title">🎸 Géneros</span>
+                <button class="modal-close" onclick="hideGenreModal()">✕</button>
+            </div>
+            <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:1.2rem">Filtra tu biblioteca por
+                género musical.</p>
+            <div id="genreModalContent"></div>
+            <div class="modal-buttons" style="margin-top:1.2rem">
+                <button onclick="filterByGenre(null); hideGenreModal()" class="btn-secondary">Ver todos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lyrics / Karaoke Modal -->
+    <div id="lyricsModal" class="modal">
+        <div class="modal-content" style="max-width:480px">
+            <div class="modal-header">
+                <span class="modal-title" id="lyricsTitle">🎤 Letra</span>
+                <button class="modal-close" onclick="hideLyricsModal()">✕</button>
+            </div>
+            <div class="lyrics-toolbar">
+                <button id="karaokeToggleBtn" class="btn-secondary" onclick="toggleKaraoke()"
+                    style="font-size:0.85rem;padding:0.4rem 0.9rem">🎤 Iniciar Karaoke</button>
+            </div>
+            <div id="lyricsBody" class="lyrics-body"></div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content" style="max-width:450px">
+            <div class="modal-header">
+                <span class="modal-title">📊 Mis estadísticas</span>
+                <button class="modal-close" onclick="hideStats()">✕</button>
+            </div>
+            <div id="statsContent"></div>
+        </div>
+    </div>
+
+    <!-- Edit Metadata Modal -->
+    <div id="editMetadataModal" class="modal">
+        <div class="modal-content" style="max-width:400px">
+            <div class="modal-header">
+                <span class="modal-title">✏️ Editar información</span>
+                <button class="modal-close" onclick="hideEditMetadata()">✕</button>
+            </div>
+            <input type="text" id="editTitle" placeholder="Título" class="modal-input" style="margin-bottom:0.7rem">
+            <input type="text" id="editArtist" placeholder="Artista" class="modal-input" style="margin-bottom:0.7rem">
+            <select id="editGenre" class="modal-input" style="margin-bottom:0.7rem">
+                <option value="Electronic">Electronic</option>
+                <option value="Pop">Pop</option>
+                <option value="Hip Hop">Hip Hop</option>
+                <option value="Rock">Rock</option>
+                <option value="Jazz">Jazz</option>
+                <option value="Classical">Classical</option>
+                <option value="Ambient">Ambient</option>
+                <option value="R&B">R&amp;B</option>
+                <option value="Latin">Latin</option>
+                <option value="Reggaeton">Reggaeton</option>
+                <option value="Local">Local</option>
+            </select>
+            <div class="modal-buttons">
+                <button onclick="hideEditMetadata()" class="btn-secondary">Cancelar</button>
+                <button onclick="saveMetadata()" class="btn-primary" style="flex:1;margin-top:0">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content" style="max-width:380px">
+            <div class="modal-header">
+                <span class="modal-title">📤 Compartir canción</span>
+                <button class="modal-close" onclick="hideShareModal()">✕</button>
+            </div>
+            <div id="shareContent"></div>
+        </div>
+    </div>
+
+    <!-- Mix Inteligente Modal -->
+    <div id="smartMixModal" class="modal">
+        <div class="modal-content" style="max-width:420px">
+            <div class="modal-header">
+                <span class="modal-title">🎲 Mix Inteligente</span>
+                <button class="modal-close" onclick="hideSmartMixModal()">✕</button>
+            </div>
+            <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:1.2rem">Genera una mezcla basada en
+                tus gustos.</p>
+            <div id="smartMixContent"></div>
+            <div class="modal-buttons" style="margin-top:1.2rem">
+                <button onclick="hideSmartMixModal()" class="btn-secondary">Cancelar</button>
+                <button onclick="playSmartMix()" class="btn-primary" style="flex:1;margin-top:0">▶ Reproducir
+                    Mix</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== FOCUS MODE OVERLAY ==================== -->
+    <div id="focusModeOverlay" class="focus-overlay" style="display:none">
+        <div id="focusOverlayBg" class="focus-overlay-bg"></div>
+        <button class="focus-exit-btn" onclick="toggleFocusMode()" title="Salir (F o Esc)">✕ Salir</button>
+        <div class="focus-art" id="focusArt">🎵</div>
+        <div class="focus-info">
+            <div class="focus-title" id="focusTitle">Sin canción</div>
+            <div class="focus-artist" id="focusArtist">—</div>
+        </div>
+        <div class="focus-progress">
+            <span id="focusCurrentTime">0:00</span>
+            <div class="focus-progress-track" id="focusProgressTrack">
+                <div class="focus-progress-fill" id="focusProgressFill"></div>
+            </div>
+            <span id="focusDuration">0:00</span>
+        </div>
+        <div class="focus-controls">
+            <button onclick="toggleShuffle()" class="focus-ctrl-btn" id="focusShuffleBtn" title="Aleatorio">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 3 21 3 21 8" />
+                    <line x1="4" y1="20" x2="21" y2="3" />
+                    <polyline points="21 16 21 21 16 21" />
+                    <line x1="15" y1="15" x2="21" y2="21" />
+                </svg>
+            </button>
+            <button onclick="prevSong()" class="focus-ctrl-btn" title="Anterior">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="19 20 9 12 19 4 19 20" />
+                    <line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        fill="none" />
+                </svg>
+            </button>
+            <button onclick="togglePlay()" class="focus-play-btn" id="focusPlayBtn" title="Play/Pausa">
+                <svg id="focusPlayIcon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <svg id="focusPauseIcon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"
+                    style="display:none">
+                    <rect x="6" y="4" width="4" height="16" />
+                    <rect x="14" y="4" width="4" height="16" />
+                </svg>
+            </button>
+            <button onclick="nextSong()" class="focus-ctrl-btn" title="Siguiente">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 4 15 12 5 20 5 4" />
+                    <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        fill="none" />
+                </svg>
+            </button>
+            <button onclick="toggleLike()" class="focus-ctrl-btn" id="focusLikeBtn" title="Favorito">♡</button>
+        </div>
+        <div class="focus-visualizer" id="focusVisualizer">
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+            <div class="focus-bar"></div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept="audio/*" multiple style="display:none">
+    <input type="file" id="importPlaylistInput" accept=".json" style="display:none">
+    <audio id="audioPlayer"></audio>
+
+    <script src="script.js"></script>
+    <script src="eq-lyrics-patch.js"></script>
+
+    <!-- Close modals on outside click -->
+    <script>
+        document.querySelectorAll('.modal').forEach(m => {
+            m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+        });
+    </script>
+</body>
+
+</html>
